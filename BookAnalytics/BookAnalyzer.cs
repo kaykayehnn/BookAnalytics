@@ -4,7 +4,7 @@ using System.Linq;
 
 namespace _01_BookStatistics
 {
-    class BookAnalyzer
+    public class BookAnalyzer
     {
         private string bookText;
         private string[] words;
@@ -25,35 +25,90 @@ namespace _01_BookStatistics
         {
             var words = this.TokenizeBook();
 
-            throw new NotImplementedException();
+            int minIndex = 0;
+            for (int i = 0; i < words.Length; i++)
+            {
+                if(words[i].Length < words[minIndex].Length)
+                {
+                    minIndex = i;
+                }
+            }
+
+            return words[minIndex];
         }
 
         public string GetLongestWord()
         {
             var words = this.TokenizeBook();
 
-            throw new NotImplementedException();
+            int maxIndex = 0;
+            for (int i = 0; i < words.Length; i++)
+            {
+                if (words[i].Length > words[maxIndex].Length)
+                {
+                    maxIndex = i;
+                }
+            }
+
+            return words[maxIndex];
         }
 
         public double GetAverageWordLength()
         {
             var words = this.TokenizeBook();
 
-            throw new NotImplementedException();
+            int totalLetters = words.Sum(w => w.Length);
+
+            double averageLength = (double)totalLetters / words.Length;
+            
+            return averageLength;
         }
 
-        public string[] GetMostCommonWords()
+        public string[] GetFiveMostCommonWords()
+        {
+            var wordOccurences = this.GetWordOccurrences();
+
+            var mostCommon = wordOccurences
+                .OrderByDescending(kvp => kvp.Value)
+                .Select(kvp => kvp.Key)
+                .Take(5)
+                .ToArray();
+
+            return mostCommon;
+        }
+
+        public string[] GetFiveLeastCommonWords()
+        {
+            var wordOccurences = this.GetWordOccurrences();
+
+            var mostCommon = wordOccurences
+                .OrderBy(kvp => kvp.Value)
+                .Select(kvp => kvp.Key)
+                .Take(5)
+                .ToArray();
+
+            return mostCommon;
+        }
+
+        private Dictionary<string, int> GetWordOccurrences()
         {
             var words = this.TokenizeBook();
 
-            throw new NotImplementedException();
-        }
+            var wordOccurences = new Dictionary<string, int>();
+            foreach (var word in words)
+            {
+                // Convert to uppercase to make dictionary case-insensitive.
+                // Further reading https://stackoverflow.com/questions/234591/upper-vs-lower-case
+                var upper = word.ToUpperInvariant();
+                if (!wordOccurences.ContainsKey(upper))
+                {
+                    wordOccurences[upper] = 0;
+                }
 
-        public string[] GetLeastCommonWords()
-        {
-            var words = this.TokenizeBook();
+                wordOccurences[upper]++;
+            }
 
-            throw new NotImplementedException();
+            return wordOccurences;
         }
 
         private string[] TokenizeBook()
@@ -67,11 +122,5 @@ namespace _01_BookStatistics
 
             return words;
         }
-
-        public string[] GetWords()
-        {
-            return this.TokenizeBook();
-        }
-
     }
 }
