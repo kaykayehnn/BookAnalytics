@@ -121,4 +121,10 @@
   <data name="Lev_Tolstoj_Vojna_i_mir_24967" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\Lev Tolstoj -  - . Vojna i mir - 24967.txt;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;utf-8</value>
   </data>
+  <data name="Victor_Hugo_Kletnitsite_Tom_pyrvi_6101_b" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Victor-Hugo_-_Kletnitsite_-_Tom_pyrvi_-_6101-b.txt;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;utf-8</value>
+  </data>
+  <data name="Victor_Hugo_Kletnitsite_Tom_vtori_6102_b" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Victor-Hugo_-_Kletnitsite_-_Tom_vtori_-_6102-b.txt;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;utf-8</value>
+  </data>
 </root>

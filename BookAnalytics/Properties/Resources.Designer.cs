@@ -78,5 +78,45 @@ namespace _01_BookStatistics.Properties {
                 return ResourceManager.GetString("Lev_Tolstoj_Vojna_i_mir_24967", resourceCulture);
             }
         }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to 	Виктор Юго
+        ///	Клетниците
+        ///	Том първи
+        ///
+        ///
+        ///	Великият и талантлив писател Виктор Юго е един от най-ярките представители на френската и световната култура.
+        ///	Поет, драматург, романист, публицист, той е оставил голямо литературно наследство, което и до днес се чете с любов от милионите люде в цял свят.
+        ///	„Клетниците“ е едно от най-известните му произведения. В него са отразени хуманистичните идеи на века и непримиримата борба против безчовечния закон в тогавашното общество.
+        ///	С неподражаемо майсторство Виктор Ю [rest of string was truncated]&quot;;.
+        /// </summary>
+        internal static string Victor_Hugo_Kletnitsite_Tom_pyrvi_6101_b {
+            get {
+                return ResourceManager.GetString("Victor_Hugo_Kletnitsite_Tom_pyrvi_6101_b", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to 	Виктор Юго
+        ///	Клетниците
+        ///	Том втори
+        ///
+        ///	Трета част
+        ///	Мариус
+        ///	(Продължение)
+        ///
+        ///	Книга седма
+        ///	Котешки час
+        ///
+        ///	I
+        ///	Рудници и рудокопачи
+        ///
+        ///	Всички човешки общества имат долен, _трети трюм_, както се казва в театрите. Обществената почва е подровена надлъж и нашир било за добро, било за зло. Тези подземни изкопи са едни над други. Има плитки и дълбоки галерии. И в тъмното подземие има горни и долни етажи. Понякога под цивилизацията стават срутвания, а ние тъпчем равнодушно и безгрижно по повърхността. Енцикло [rest of string was truncated]&quot;;.
+        /// </summary>
+        internal static string Victor_Hugo_Kletnitsite_Tom_vtori_6102_b {
+            get {
+                return ResourceManager.GetString("Victor_Hugo_Kletnitsite_Tom_vtori_6102_b", resourceCulture);
+            }
+        }
     }
 }
