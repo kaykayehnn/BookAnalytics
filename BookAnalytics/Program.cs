@@ -1,63 +1,88 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Diagnostics;
-using System.IO;
-using System.Linq;
 using System.Threading;
+using static _01_BookStatistics.BookAnalyzer;
 
 namespace _01_BookStatistics
 {
     class Program
     {
-        static void AnalyzeBook(string bookText)
+        static void Main(string[] args)
         {
-            BookAnalyzer bookAnalyzer = new BookAnalyzer(bookText);
+            // Ensure cyrillic characters are output correctly.
+            Console.OutputEncoding = System.Text.Encoding.UTF8;
 
-            Console.WriteLine("Analyzing book...");
-            var wordCount = bookAnalyzer.CountWords();
-            var shortestWord = bookAnalyzer.GetShortestWord();
-            var longestWord = bookAnalyzer.GetLongestWord();
-            var averageWordLength = bookAnalyzer.GetAverageWordLength();
-            var mostCommonWords = bookAnalyzer.GetFiveMostCommonWords();
-            var leastCommonWords = bookAnalyzer.GetFiveLeastCommonWords();
-
-            Console.WriteLine($@"Words in book: {wordCount}
-Shortest word: {shortestWord}
-Longest word: {longestWord}
-Average word length: {averageWordLength:F1}
-Most common words: {string.Join(", ", mostCommonWords)}
-Least common words: {string.Join(", ", leastCommonWords)}");
-        }
-
-        static void AnalyzeBookParallel(string bookText)
-        {
-            BookAnalyzer bookAnalyzer = new BookAnalyzer(bookText);
-
-            Console.WriteLine("Analyzing book...");
-
-            int wordCount = 0;
-            string shortestWord = string.Empty;
-            string longestWord = string.Empty;
-            double averageWordLength = 0;
-            string[] mostCommonWords = { };
-            string[] leastCommonWords = { };
-
-            var wordCountThread = new Thread(() => wordCount = bookAnalyzer.CountWords());
-            var shortestWordThread = new Thread(() => shortestWord = bookAnalyzer.GetShortestWord());
-            var longestWordThread = new Thread(() => longestWord = bookAnalyzer.GetLongestWord());
-            var averageWordLengthThread = new Thread(() => averageWordLength = bookAnalyzer.GetAverageWordLength());
-            var mostCommonWordsThread = new Thread(() => mostCommonWords = bookAnalyzer.GetFiveMostCommonWords());
-            var leastCommonWordsThread = new Thread(() => leastCommonWords = bookAnalyzer.GetFiveLeastCommonWords());
-
-            Thread[] threads =
-            {
-                wordCountThread, shortestWordThread, longestWordThread,
-                averageWordLengthThread, mostCommonWordsThread, leastCommonWordsThread
+            Book[] books = {
+                new Book("Война и мир", Properties.Resources.Lev_Tolstoj_Vojna_i_mir_24967),
+                new Book("Клетниците, том 1", Properties.Resources.Victor_Hugo_Kletnitsite_Tom_pyrvi_6101_b),
+                new Book("Клетниците, том 2", Properties.Resources.Victor_Hugo_Kletnitsite_Tom_vtori_6102_b)
             };
 
-            foreach (var thread in threads)
+            AnalyzeBooksSequential(books);
+
+            AnalyzeBooksInParallel(books);
+        }
+
+        static BookAnalysis[] AnalyzeBooksSequential(Book[] books)
+        {
+            Console.WriteLine($"Starting sequential analysis for {books.Length} books...");
+
+            var analyses = new BookAnalysis[books.Length];
+
+            var sw = new Stopwatch();
+            var totalSw = new Stopwatch();
+            totalSw.Start();
+
+            for (int i = 0; i < books.Length; i++)
             {
-                thread.Start();
+                sw.Restart();
+                var book = books[i];
+                Console.WriteLine($"Starting analysis for {book.Title}...");
+                var bookAnalyzer = new ThreadedBookAnalyzer(book);
+
+                analyses[i] = bookAnalyzer.Analyze();
+                sw.Stop();
+                Console.WriteLine($"Completed analysis for {book.Title} in {sw.ElapsedMilliseconds / 1000f}s");
+            }
+
+            totalSw.Stop();
+            Console.WriteLine($"Completed analysis of {books.Length} books in {totalSw.ElapsedMilliseconds / 1000f}s");
+            Console.WriteLine();
+
+            return analyses;
+        }
+
+        static BookAnalysis[] AnalyzeBooksInParallel(Book[] books)
+        {
+            Console.WriteLine($"Starting parallel analysis for {books.Length} books...");
+
+            Thread[] threads = new Thread[books.Length];
+            BookAnalysis[] analyses = new BookAnalysis[books.Length];
+
+            var totalSw = new Stopwatch();
+            totalSw.Start();
+
+            for (int i = 0; i < books.Length; i++)
+            {
+                // Copy i here to prevent closure-related problems.
+                int ix = i;
+                threads[i] = new Thread(() =>
+                {
+                    var sw = new Stopwatch();
+                    
+                    var book = books[ix];
+                    Console.WriteLine($"Starting analysis for {book.Title}...");
+                    
+                    sw.Start();
+                    
+                    var bookAnalyzer = new ThreadedBookAnalyzer(books[ix]);
+                    analyses[ix] = bookAnalyzer.Analyze();
+
+                    sw.Stop();
+                    Console.WriteLine($"Completed analysis for {book.Title} in {sw.ElapsedMilliseconds / 1000f}s");
+                });
+
+                threads[i].Start();
             }
 
             foreach (var thread in threads)
@@ -65,28 +90,21 @@ Least common words: {string.Join(", ", leastCommonWords)}");
                 thread.Join();
             }
 
-            Console.WriteLine($@"Words in book: {wordCount}
-Shortest word: {shortestWord}
-Longest word: {longestWord}
-Average word length: {averageWordLength:F1}
-Most common words: {string.Join(", ", mostCommonWords)}
-Least common words: {string.Join(", ", leastCommonWords)}");
+            totalSw.Stop();
+            Console.WriteLine($"Completed analysis of {books.Length} books in {totalSw.ElapsedMilliseconds / 1000f}s");
+            Console.WriteLine();
+
+            return analyses;
         }
 
-        static void Main(string[] args)
+        static void PrintAnalysis(BookAnalysis analysis)
         {
-            // Ensure cyrillic characters are output correctly.
-            Console.OutputEncoding = System.Text.Encoding.UTF8;
-
-            var book = _01_BookStatistics.Properties.Resources.Lev_Tolstoj_Vojna_i_mir_24967;
-
-            Stopwatch sw = new Stopwatch();
-            
-            sw.Start();
-            AnalyzeBookParallel(book);
-            sw.Stop();
-
-            Console.WriteLine($"Elapsed time: {sw.ElapsedMilliseconds / 1000.0}s");
+            Console.WriteLine($@"Words in book: {analysis.WordCount}
+Shortest word: {analysis.ShortestWord}
+Longest word: {analysis.LongestWord}
+Average word length: {analysis.AverageWordLength:F1}
+Most common words: {string.Join(", ", analysis.MostCommonWords)}
+Least common words: {string.Join(", ", analysis.LeastCommonWords)}");
         }
     }
 }

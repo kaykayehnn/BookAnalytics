@@ -1,27 +1,45 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 
 namespace _01_BookStatistics
 {
     public class BookAnalyzer
     {
-        private string bookText;
+        private Book book;
         private string[] words;
 
-        public BookAnalyzer(string bookText)
+        public BookAnalyzer(Book book)
         {
-            this.bookText = bookText;
+            this.book = book;
         }
 
-        public int CountWords()
+        public virtual BookAnalysis Analyze()
+        {
+            var wordCount = this.CountWords();
+            var shortestWord = this.GetShortestWord();
+            var longestWord = this.GetLongestWord();
+            var averageWordLength = this.GetAverageWordLength();
+            var mostCommonWords = this.GetFiveMostCommonWords();
+            var leastCommonWords = this.GetFiveLeastCommonWords();
+
+            return new BookAnalysis(
+                wordCount,
+                shortestWord,
+                longestWord,
+                averageWordLength,
+                mostCommonWords,
+                leastCommonWords
+               );
+        }
+
+        protected int CountWords()
         {
             var words = this.TokenizeBook();
 
             return words.Length;
         }
 
-        public string GetShortestWord()
+        protected string GetShortestWord()
         {
             var words = this.TokenizeBook();
 
@@ -37,7 +55,7 @@ namespace _01_BookStatistics
             return words[minIndex];
         }
 
-        public string GetLongestWord()
+        protected string GetLongestWord()
         {
             var words = this.TokenizeBook();
 
@@ -53,7 +71,7 @@ namespace _01_BookStatistics
             return words[maxIndex];
         }
 
-        public double GetAverageWordLength()
+        protected double GetAverageWordLength()
         {
             var words = this.TokenizeBook();
 
@@ -64,7 +82,7 @@ namespace _01_BookStatistics
             return averageLength;
         }
 
-        public string[] GetFiveMostCommonWords()
+        protected string[] GetFiveMostCommonWords()
         {
             var wordOccurences = this.GetWordOccurrences();
 
@@ -77,7 +95,7 @@ namespace _01_BookStatistics
             return mostCommon;
         }
 
-        public string[] GetFiveLeastCommonWords()
+        protected string[] GetFiveLeastCommonWords()
         {
             var wordOccurences = this.GetWordOccurrences();
 
@@ -111,16 +129,42 @@ namespace _01_BookStatistics
             return wordOccurences;
         }
 
-        private string[] TokenizeBook()
+        // TODO: think more about this
+        protected string[] TokenizeBook()
         {
             if (this.words != null) return this.words;
 
-            var sanitizedText = BookSanitizer.Sanitize(this.bookText);
+            var sanitizedText = BookSanitizer.Sanitize(this.book.Text);
 
             var words = WordMatcher.ExtractWords(sanitizedText);
             this.words = words;
 
             return words;
+        }
+
+        public struct BookAnalysis
+        {
+            public BookAnalysis(int wordCount,
+                string shortestWord,
+                string longestWord,
+                double averageWordLength,
+                string[] mostCommonWords,
+                string[] leastCommonWords)
+            {
+                this.WordCount = wordCount;
+                this.ShortestWord = shortestWord;
+                this.LongestWord = longestWord;
+                this.AverageWordLength = averageWordLength;
+                this.MostCommonWords = mostCommonWords;
+                this.LeastCommonWords = leastCommonWords;
+            }
+
+            public int WordCount { get; }
+            public string ShortestWord { get; }
+            public string LongestWord { get; }
+            public double AverageWordLength { get; }
+            public string[] MostCommonWords { get; }
+            public string[] LeastCommonWords { get; }
         }
     }
 }
