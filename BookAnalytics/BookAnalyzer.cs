@@ -5,22 +5,23 @@ namespace _01_BookStatistics
 {
     public class BookAnalyzer
     {
-        private Book book;
-        private string[] words;
-
-        public BookAnalyzer(Book book)
+        public BookAnalyzer(BookParser bookParser)
         {
-            this.book = book;
+            this.BookParser = bookParser;
         }
 
-        public virtual BookAnalysis Analyze()
+        protected BookParser BookParser { get; }
+
+        public virtual BookAnalysis Analyze(Book book)
         {
-            var wordCount = this.CountWords();
-            var shortestWord = this.GetShortestWord();
-            var longestWord = this.GetLongestWord();
-            var averageWordLength = this.GetAverageWordLength();
-            var mostCommonWords = this.GetFiveMostCommonWords();
-            var leastCommonWords = this.GetFiveLeastCommonWords();
+            var words = this.BookParser.Parse(book.Text);
+
+            var wordCount = this.CountWords(words);
+            var shortestWord = this.GetShortestWord(words);
+            var longestWord = this.GetLongestWord(words);
+            var averageWordLength = this.GetAverageWordLength(words);
+            var mostCommonWords = this.GetFiveMostCommonWords(words);
+            var leastCommonWords = this.GetFiveLeastCommonWords(words);
 
             return new BookAnalysis(
                 wordCount,
@@ -32,17 +33,13 @@ namespace _01_BookStatistics
                );
         }
 
-        protected int CountWords()
+        protected int CountWords(string[] words)
         {
-            var words = this.TokenizeBook();
-
             return words.Length;
         }
 
-        protected string GetShortestWord()
+        protected string GetShortestWord(string[] words)
         {
-            var words = this.TokenizeBook();
-
             int minIndex = 0;
             for (int i = 0; i < words.Length; i++)
             {
@@ -55,10 +52,8 @@ namespace _01_BookStatistics
             return words[minIndex];
         }
 
-        protected string GetLongestWord()
+        protected string GetLongestWord(string[] words)
         {
-            var words = this.TokenizeBook();
-
             int maxIndex = 0;
             for (int i = 0; i < words.Length; i++)
             {
@@ -71,10 +66,8 @@ namespace _01_BookStatistics
             return words[maxIndex];
         }
 
-        protected double GetAverageWordLength()
+        protected double GetAverageWordLength(string[] words)
         {
-            var words = this.TokenizeBook();
-
             int totalLetters = words.Sum(w => w.Length);
 
             double averageLength = (double)totalLetters / words.Length;
@@ -82,9 +75,9 @@ namespace _01_BookStatistics
             return averageLength;
         }
 
-        protected string[] GetFiveMostCommonWords()
+        protected string[] GetFiveMostCommonWords(string[] words)
         {
-            var wordOccurences = this.GetWordOccurrences();
+            var wordOccurences = this.GetWordOccurrences(words);
 
             var mostCommon = wordOccurences
                 .OrderByDescending(kvp => kvp.Value)
@@ -95,9 +88,9 @@ namespace _01_BookStatistics
             return mostCommon;
         }
 
-        protected string[] GetFiveLeastCommonWords()
+        protected string[] GetFiveLeastCommonWords(string[] words)
         {
-            var wordOccurences = this.GetWordOccurrences();
+            var wordOccurences = this.GetWordOccurrences(words);
 
             var mostCommon = wordOccurences
                 .OrderBy(kvp => kvp.Value)
@@ -108,10 +101,8 @@ namespace _01_BookStatistics
             return mostCommon;
         }
 
-        private Dictionary<string, int> GetWordOccurrences()
+        private Dictionary<string, int> GetWordOccurrences(string[] words)
         {
-            var words = this.TokenizeBook();
-
             var wordOccurences = new Dictionary<string, int>();
             foreach (var word in words)
             {
@@ -127,19 +118,6 @@ namespace _01_BookStatistics
             }
 
             return wordOccurences;
-        }
-
-        // TODO: think more about this
-        protected string[] TokenizeBook()
-        {
-            if (this.words != null) return this.words;
-
-            var sanitizedText = BookSanitizer.Sanitize(this.book.Text);
-
-            var words = WordMatcher.ExtractWords(sanitizedText);
-            this.words = words;
-
-            return words;
         }
 
         public struct BookAnalysis

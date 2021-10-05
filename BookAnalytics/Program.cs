@@ -21,6 +21,8 @@ namespace _01_BookStatistics
 
             AnalyzeBooksSequential(books);
 
+            AnalyzeBooksSemiParallel(books);
+
             AnalyzeBooksInParallel(books);
         }
 
@@ -39,9 +41,39 @@ namespace _01_BookStatistics
                 sw.Restart();
                 var book = books[i];
                 Console.WriteLine($"Starting analysis for {book.Title}...");
-                var bookAnalyzer = new ThreadedBookAnalyzer(book);
+                var bookAnalyzer = new BookAnalyzer(new ThreadedBookParser());
 
-                analyses[i] = bookAnalyzer.Analyze();
+                analyses[i] = bookAnalyzer.Analyze(book);
+                sw.Stop();
+                Console.WriteLine($"Completed analysis for {book.Title} in {sw.ElapsedMilliseconds / 1000f}s");
+            }
+
+            totalSw.Stop();
+            Console.WriteLine($"Completed analysis of {books.Length} books in {totalSw.ElapsedMilliseconds / 1000f}s");
+            Console.WriteLine();
+
+            return analyses;
+        }
+
+        static BookAnalysis[] AnalyzeBooksSemiParallel(Book[] books)
+        {
+            Console.WriteLine($"Starting sequential analysis with parallel tasks for {books.Length} books...");
+
+            var analyses = new BookAnalysis[books.Length];
+
+            var sw = new Stopwatch();
+            var totalSw = new Stopwatch();
+            totalSw.Start();
+
+            for (int i = 0; i < books.Length; i++)
+            {
+                sw.Restart();
+                var book = books[i];
+                Console.WriteLine($"Starting analysis for {book.Title}...");
+                // TODO: add other book parsers
+                var bookAnalyzer = new ThreadedBookAnalyzer(new ThreadedBookParser());
+
+                analyses[i] = bookAnalyzer.Analyze(book);
                 sw.Stop();
                 Console.WriteLine($"Completed analysis for {book.Title} in {sw.ElapsedMilliseconds / 1000f}s");
             }
@@ -76,8 +108,8 @@ namespace _01_BookStatistics
                     
                     sw.Start();
                     
-                    var bookAnalyzer = new ThreadedBookAnalyzer(books[ix]);
-                    analyses[ix] = bookAnalyzer.Analyze();
+                    var bookAnalyzer = new ThreadedBookAnalyzer(new ThreadedBookParser());
+                    analyses[ix] = bookAnalyzer.Analyze(books[ix]);
 
                     sw.Stop();
                     Console.WriteLine($"Completed analysis for {book.Title} in {sw.ElapsedMilliseconds / 1000f}s");
