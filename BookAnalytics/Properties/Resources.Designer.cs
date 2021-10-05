@@ -61,6 +61,15 @@ namespace _01_BookStatistics.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to AVID READER SINCE &quot;boot&quot;  WAS THE NAME: for computer enthusiast, MaxPC is a welcome sight in your mailbox. i can remember for years savorying every page of &quot;boot&quot; (as it was called in beginning) as i was (and still am) obcessed with PC&apos;s. Anyone, from advanced users - to beginners looking for knowledge - can profit from every issue of MaxPC. the icing on the cake is the subscription that comes with a CD-ROM as it is packed with demos, utilities, and other useful apps (very helpful for those not blessed with [rest of string was truncated]&quot;;.
+        /// </summary>
+        internal static string Amazon_magazine_subscription_reviews {
+            get {
+                return ResourceManager.GetString("Amazon_magazine_subscription_reviews", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to 	Лев Толстой
         ///	Война и мир
         ///

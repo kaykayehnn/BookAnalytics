@@ -15,7 +15,8 @@ namespace _01_BookStatistics
             Book[] books = {
                 new Book("Война и мир", Properties.Resources.Lev_Tolstoj_Vojna_i_mir_24967),
                 new Book("Клетниците, том 1", Properties.Resources.Victor_Hugo_Kletnitsite_Tom_pyrvi_6101_b),
-                new Book("Клетниците, том 2", Properties.Resources.Victor_Hugo_Kletnitsite_Tom_vtori_6102_b)
+                new Book("Клетниците, том 2", Properties.Resources.Victor_Hugo_Kletnitsite_Tom_vtori_6102_b),
+                new Book("Amazon reviews of magazine subscriptions public dataset", Properties.Resources.Amazon_magazine_subscription_reviews)
             };
 
             AnalyzeBooksSequential(books);
