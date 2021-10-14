@@ -10,6 +10,10 @@ namespace _01_BookStatistics
         {
             this.stringProcessor = new ThreadedStringProcessor();
         }
+        public ThreadedBookParser(int threadCount) : base()
+        {
+            this.stringProcessor = new ThreadedStringProcessor(threadCount);
+        }
 
         public override string[] Parse(string text)
         {
